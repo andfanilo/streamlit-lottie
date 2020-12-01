@@ -12,6 +12,7 @@ interface PythonArgs {
   speed: number
   direction: 1 | -1
   quality: "high" | "medium" | "low"
+  renderer: "svg" | "canvas"
   height?: number
   width?: number
 }
@@ -26,6 +27,7 @@ const StreamlitLottie = (props: ComponentProps) => {
     direction,
     loop,
     quality,
+    renderer,
     height,
     width,
   }: PythonArgs = props.args
@@ -37,11 +39,12 @@ const StreamlitLottie = (props: ComponentProps) => {
 
     lottieInstanceRef.current = lottie.loadAnimation({
       container: lottieElementRef.current,
-      renderer: "svg",
+      renderer: renderer,
       loop: loop,
       autoplay: true,
       animationData: animationData,
     })
+    lottieInstanceRef.current.setSubframe(false)
 
     lottieInstanceRef.current.addEventListener("DOMLoaded", () => {
       Streamlit.setFrameHeight()
@@ -61,7 +64,7 @@ const StreamlitLottie = (props: ComponentProps) => {
       lottieInstanceRef.current.destroy()
       lottieInstanceRef.current = undefined
     }
-  }, [animationData, loop])
+  }, [animationData, loop, renderer])
 
   useEffect(() => {
     if (!lottieInstanceRef.current) return

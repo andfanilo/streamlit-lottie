@@ -21,6 +21,7 @@ def st_lottie(
     reverse=False,
     loop=True,
     quality="low",
+    renderer="svg",
     height=None,
     width=None,
     key=None,
@@ -39,6 +40,8 @@ def st_lottie(
         low, medium or high. Defaults to low.
     loop: bool | number
         Loop animation, forever if True, once if False, or 'loop' times if number
+    renderer: str
+        svg (default) or canvas
     height: int
         Height of the animation in px
     width: int
@@ -59,6 +62,7 @@ def st_lottie(
         direction=-1 if reverse else 1,
         loop=loop,
         quality=quality,
+        renderer=renderer,
         height=height,
         width=width,
         key=key,
