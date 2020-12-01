@@ -1,5 +1,8 @@
 # Streamlit Lottie
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/andfanilo/streamlit-lottie-demo/master/app.py)
+
+
 Integrate [Lottie](https://lottiefiles.com/) animations inside your Streamlit app!
 
 ## Install
