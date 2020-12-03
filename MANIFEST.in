@@ -1,1 +1,1 @@
-recursive-include streamlit-lottie/frontend/build *
+recursive-include streamlit_lottie/frontend/build *
