@@ -2,8 +2,9 @@
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/andfanilo/streamlit-lottie-demo/master/app.py)
 
-
 Integrate [Lottie](https://lottiefiles.com/) animations inside your Streamlit app!
+
+![](./img/demo.gif)
 
 ## Install
 
@@ -72,10 +73,3 @@ streamlit run app.py
 - [lottie-react (LottieFiles)](https://github.com/LottieFiles/lottie-react)
 - [react-lottie-player (mifi)](https://github.com/mifi/react-lottie-player)
 - [lottie-interactivity](https://github.com/LottieFiles/lottie-interactivity)
-
-Credits Lottie files:
-
-- [Bodymovin](https://lottiefiles.com/16-body-movin)
-- [Success](https://lottiefiles.com/26514-check-success-animation)
-- [Progress Bar](https://lottiefiles.com/117-progress-bar)
-- [Error](https://lottiefiles.com/38463-error)
