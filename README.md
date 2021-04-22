@@ -42,8 +42,8 @@ npm install
 - Python side
 
 ```shell script
-conda create -n streamlit-echarts python=3.7
-conda activate streamlit-echarts
+conda create -n streamlit-lottie python=3.7
+conda activate streamlit-lottie
 pip install -e .
 ```
 
