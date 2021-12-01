@@ -1,13 +1,15 @@
 import os
+from contextlib import contextmanager
 
+import streamlit as st
 import streamlit.components.v1 as components
-
 
 _RELEASE = False
 
 if not _RELEASE:
     _st_lottie = components.declare_component(
-        "streamlit_lottie", url="http://localhost:3001",
+        "streamlit_lottie",
+        url="http://localhost:3001",
     )
 else:
     parent_dir = os.path.dirname(os.path.abspath(__file__))
@@ -21,7 +23,6 @@ def st_lottie(
     reverse=False,
     loop=True,
     quality="low",
-    renderer="svg",
     height=None,
     width=None,
     key=None,
@@ -40,8 +41,6 @@ def st_lottie(
         low, medium or high. Defaults to low.
     loop: bool | number
         Loop animation, forever if True, once if False, or 'loop' times if number
-    renderer: str
-        svg (default) or canvas
     height: int
         Height of the animation in px
     width: int
@@ -62,10 +61,31 @@ def st_lottie(
         direction=-1 if reverse else 1,
         loop=loop,
         quality=quality,
-        renderer=renderer,
         height=height,
         width=width,
         key=key,
         default=None,
     )
     return is_animation_finished
+
+
+@contextmanager
+def st_lottie_spinner(
+    animation_data,
+    speed=1,
+    reverse=False,
+    loop=True,
+    quality="low",
+    height=None,
+    width=None,
+    key=None,
+):
+    lottie_container = st.empty()
+    try:
+        with lottie_container:
+            st_lottie(
+                animation_data, speed, reverse, loop, quality, height, width, key
+            )
+        yield
+    finally:
+        lottie_container.empty()
