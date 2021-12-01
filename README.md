@@ -33,7 +33,7 @@ lottie_json = load_lottieurl(lottie_url)
 st_lottie(lottie_json)
 
 if st.button("Download"):
-    with st_lottie_spinner(lottie_json)
+    with st_lottie_spinner(lottie_json):
         time.sleep(5)
     st.balloons()
 ```
