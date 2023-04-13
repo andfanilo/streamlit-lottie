@@ -13,7 +13,39 @@ pip install streamlit-lottie
 ```
 
 ## Usage
+* Basic usage
+```python
+import streamlit as st
+from streamlit_lottie import st_lottie
 
+with st.echo():
+    st_lottie("https://assets5.lottiefiles.com/packages/lf20_V9t630.json")
+
+```
+
+* Basic usage (with monkey patched `st.lottie` function)
+```python
+import streamlit as st
+import streamlit_lottie
+
+with st.echo():
+    st.lottie("https://assets5.lottiefiles.com/packages/lf20_V9t630.json")
+
+```
+
+* Context manager usage, using `with` notation
+```python
+import time
+
+import streamlit as st
+from streamlit_lottie import st_lottie
+
+with st_lottie("https://assets5.lottiefiles.com/packages/lf20_V9t630.json"):
+    time.sleep(5)
+
+```
+
+* Download lottie manually example
 ```python
 import time
 import requests
@@ -42,6 +74,7 @@ if st.button("Download"):
     with st_lottie_spinner(lottie_download, key="download"):
         time.sleep(5)
     st.balloons()
+
 ```
 
 ## Development

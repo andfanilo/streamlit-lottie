@@ -47,18 +47,12 @@ const StreamlitLottie = (props: ComponentProps) => {
     lottieInstanceRef.current.addEventListener("DOMLoaded", () => {
       Streamlit.setFrameHeight()
     })
-    /*
-    lottieInstanceRef.current.addEventListener("complete", () => {
-      Streamlit.setComponentValue(true)
-    })
-    */
 
     return () => {
       if (!lottieInstanceRef.current) {
         return
       }
       lottieInstanceRef.current.removeEventListener("DOMLoaded")
-      // lottieInstanceRef.current.removeEventListener("complete")
       lottieInstanceRef.current.destroy()
       lottieInstanceRef.current = undefined
     }
@@ -86,7 +80,6 @@ const StreamlitLottie = (props: ComponentProps) => {
         style={{ width: width || "100%", height: height || "100%" }}
         ref={lottieElementRef}
       ></div>
-      {console.log("Render")}
     </>
   )
 }
