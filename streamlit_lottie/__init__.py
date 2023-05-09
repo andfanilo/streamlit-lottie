@@ -73,7 +73,7 @@ def get_animation_data(animation_source: Union[bytes, str, dict]):
             if validate_url(animation_source):
                 animation_data = download_animation_data(animation_source)
         except ValidationFailure:
-            # Is not url try to covert it to json
+            # Is not url try to convert it to json
             try:
                 animation_data = json.loads(animation_source)
             except (json.JSONDecodeError, TypeError) as exc:
