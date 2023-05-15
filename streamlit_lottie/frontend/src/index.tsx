@@ -5,8 +5,6 @@ import StreamlitLottie from "./StreamlitLottie"
 import "./index.css"
 
 ReactDOM.render(
-  <React.StrictMode>
-    <StreamlitLottie />
-  </React.StrictMode>,
-  document.getElementById("root")
+    <StreamlitLottie />,
+    document.getElementById("root")
 )

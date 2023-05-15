@@ -1,8 +1,17 @@
 import os
 from contextlib import contextmanager
 
+import uuid
+import time
+import json
+import requests
 import streamlit as st
 import streamlit.components.v1 as components
+from typing import Union, Optional, Literal
+from streamlit.errors import StreamlitAPIException
+
+from streamlit_lottie.url import url as validate_url
+from streamlit_lottie.utils import ValidationFailure
 
 _RELEASE = False
 
@@ -17,75 +26,155 @@ else:
     _st_lottie = components.declare_component("streamlit_lottie", path=build_dir)
 
 
-def st_lottie(
-    animation_data,
-    speed=1,
-    reverse=False,
-    loop=True,
-    quality="low",
-    height=None,
-    width=None,
-    key=None,
-):
-    """Create a new instance of "my_component".
+class LottieDownloadFailure(StreamlitAPIException):
+    pass
+
+
+def _download_animation_data(url):
+    request = requests.get(url)
+    try:
+        return request.json()
+    except (json.JSONDecodeError, TypeError) as exc:
+        raise LottieDownloadFailure(
+            f"""Unable to download animation data from {url}  \n
+* status code {request.status_code}
+* JSONDecodeError {exc}
+"""
+        )
+
+
+def download_animation_data(url):
+    try:
+        return _download_animation_data(url)
+    except LottieDownloadFailure:
+        time.sleep(1)
+        return _download_animation_data(url)
+
+
+def get_animation_data(animation_source: Union[bytes, str, dict]):
+    if not (
+        isinstance(animation_source, bytes)
+        | isinstance(animation_source, str)
+        | isinstance(animation_source, dict)
+    ):
+        raise StreamlitAPIException(
+            f"""Animation data must be one of Lottie URL or loaded JSON represented by dict or string/bytes UTF-8 JSON representative.  \n
+    Given type is: {type(animation_source)}"""
+        )
+
+    if isinstance(animation_source, bytes):
+        animation_source = animation_source.decode("UTF-8")
+
+    animation_data = None
+    if isinstance(animation_source, dict):
+        animation_data = animation_source
+    elif isinstance(animation_source, str):
+        try:
+            if validate_url(animation_source):
+                animation_data = download_animation_data(animation_source)
+        except ValidationFailure:
+            # Is not url try to convert it to json
+            try:
+                animation_data = json.loads(animation_source)
+            except (json.JSONDecodeError, TypeError) as exc:
+                raise StreamlitAPIException(
+                    f"""Unable to load animation data as JSON {exc}"""
+                )
+    return animation_data
+
+
+class st_lottie:
+    """Creates a new instance of lottie component.
 
     Parameters
     ----------
-    animation_data: Dict
-        Animation data as loaded JSON
-    speed: number
+    animation_source: bytes | str | dict
+        Animation data as Lottie URL or loaded JSON represented by dict or string/bytes UTF-8 JSON representative
+    speed: int
         Speed of animation
-    reverse: boolean
+    reverse: bool
         Reverse animation
-    quality: str
+    quality: Literal["low", "medium", "high"]
         low, medium or high. Defaults to low.
     loop: bool | number
         Loop animation, forever if True, once if False, or 'loop' times if number
-    height: int
+    height: Optional[int]
         Height of the animation in px
-    width: int
+    width: Optional[int]
         Width of the animation in px
-    key: str or None
-        An optional key that uniquely identifies this component. If this is
-        None, and the component's arguments are changed, the component will
-        be re-mounted in the Streamlit frontend and lose its current state.
 
-    Returns
-    -------
-    is_animation_finished: Boolean
-        Returns True when animation is complete, None otherwise. Similar to a st.button.
+    Returns context manager, so it can be used as a spinner.
     """
-    is_animation_finished = _st_lottie(
-        animationData=animation_data,
-        speed=speed,
-        direction=-1 if reverse else 1,
-        loop=loop,
-        quality=quality,
-        height=height,
-        width=width,
-        key=key,
-        default=None,
-    )
-    return is_animation_finished
+
+    # noinspection PyTypeChecker
+    def __init__(
+        self,
+        animation_source: Union[bytes, str, dict],
+        speed: int = 1,
+        reverse: bool = False,
+        loop: Union[bool, int] = True,
+        quality: Literal["low", "medium", "high"] = "medium",
+        height: Optional[int] = None,
+        width: Optional[int] = None,
+        key: Optional[str] = None,
+    ):
+        self.animation_data = get_animation_data(animation_source)
+        self.speed = speed
+        self.reverse = reverse
+        self.loop = loop
+        self.quality = quality
+        self.height = height
+        self.width = width
+        self.container = st.empty()
+        if not key:
+            key = str(uuid.uuid4().hex)
+        self.key = key
+        self.start(key=self.key)
+
+    def start(self, key: str):
+        with self.container:
+            _st_lottie(
+                animationData=self.animation_data,
+                speed=self.speed,
+                direction=-1 if self.reverse else 1,
+                loop=self.loop,
+                quality=self.quality,
+                height=self.height,
+                width=self.width,
+                key=key,
+                default=None,
+            )
+
+    def __enter__(self):
+        self.container.empty()
+        self.start(key=self.key or str(uuid.uuid4().hex))
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.container.empty()
 
 
 @contextmanager
 def st_lottie_spinner(
-    animation_data,
-    speed=1,
-    reverse=False,
-    loop=True,
-    quality="low",
-    height=None,
-    width=None,
-    key=None,
+    animation_source: Union[bytes, str, dict],
+    speed: int = 1,
+    reverse: bool = False,
+    loop: Union[bool, int] = True,
+    quality: Literal["low", "medium", "high"] = "medium",
+    height: Optional[int] = None,
+    width: Optional[int] = None,
+    key: Optional[str] = None,
 ):
+    if not key:
+        key = str(uuid.uuid4().hex)
+    animation_data = get_animation_data(animation_source)
     lottie_container = st.empty()
     try:
         with lottie_container:
-            st_lottie(
-                animation_data, speed, reverse, loop, quality, height, width, key
-            )
+            st_lottie(animation_data, speed, reverse, loop, quality, height, width, key)
         yield
     finally:
         lottie_container.empty()
+
+
+st.lottie = st_lottie
+st.lottie_spinner = st_lottie_spinner
