@@ -13,7 +13,9 @@ from streamlit.errors import StreamlitAPIException
 from streamlit_lottie.url import url as validate_url
 from streamlit_lottie.utils import ValidationFailure
 
-_RELEASE = False
+# Create a _RELEASE constant. We'll set this to False while we're developing
+# the component, and True when we're ready to package and distribute it.
+_RELEASE = True
 
 if not _RELEASE:
     _st_lottie = components.declare_component(

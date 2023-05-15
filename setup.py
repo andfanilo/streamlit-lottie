@@ -17,7 +17,7 @@ setuptools.setup(
     name="streamlit-lottie",
     version="0.0.4",
     author="Fanilo ANDRIANASOLO",
-    author_email="andfanilo@gmail.com",
+    author_email="contact@andfanilo.com",
     description="A Streamlit custom component to load Lottie animations",
     long_description=readme(),
     long_description_content_type="text/markdown",
