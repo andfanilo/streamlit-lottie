@@ -15,7 +15,7 @@ def readme() -> str:
 
 setuptools.setup(
     name="streamlit-lottie",
-    version="0.0.4",
+    version="0.0.5",
     author="Fanilo ANDRIANASOLO",
     author_email="contact@andfanilo.com",
     description="A Streamlit custom component to load Lottie animations",

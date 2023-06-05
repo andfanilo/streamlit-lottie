@@ -20,13 +20,15 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '14.x'
+          node-version: 16
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install setuptools wheel twine
       - name: Build streamlit-lottie JS
-        run: npm ci
+        run: |
+          npm ci
+          npm run build
         working-directory: streamlit_lottie/frontend
       - name: Build and publish
         env:
